@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { z } from "zod";
 import { toast, Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -11,6 +12,8 @@ const loginSchema = z.object({
 });
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
@@ -29,14 +32,14 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const res = await axios.post("/api/users/login", formData);
-      toast.success(res.data.message);
-      setFormData({ email: "", password: "" });
-      // Optionally redirect to dashboard here
+        const res = await axios.post("/api/users/login", formData);
+        toast.success(res.data.message);
+        setFormData({ email: "", password: "" });
+        router.push("/dashboard"); 
     } catch (error: any) {
-      toast.error(error.response?.data?.error || "Login failed.");
+        toast.error(error.response?.data?.error || "Login failed.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 

@@ -15,6 +15,13 @@
       "when": 1750273274920,
       "tag": "0001_overrated_red_ghost",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751219872994,
+      "tag": "0002_careful_black_tom",
+      "breakpoints": true
     }
   ]
 }

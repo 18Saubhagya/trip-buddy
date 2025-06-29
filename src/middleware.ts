@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET as string;
+const TOKEN_SECRET = new TextEncoder().encode(process.env.TOKEN_SECRET!);
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   if (!token) {
@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
   }
 
   try {
-    //jwt.verify(token, TOKEN_SECRET);
+    await jwtVerify(token, TOKEN_SECRET);
     return NextResponse.next();
   } catch (err) {
     console.error("Invalid JWT:", err);

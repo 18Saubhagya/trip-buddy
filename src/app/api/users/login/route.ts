@@ -1,9 +1,9 @@
-import { db } from "@/db";
-import { users } from "@/db/schema";
+import { db } from "@/db/schema";
+import { users } from "@/db/schema/users";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
-import jwt  from "jsonwebtoken";
+import {SignJWT} from "jose";
 
 export async function POST(request: Request) {
   try {
@@ -31,15 +31,21 @@ export async function POST(request: Request) {
         username: user.username,
     }; 
 
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, { expiresIn: "7d" });
+    const token = await new SignJWT(tokenData)
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("7d") 
+      .sign(new TextEncoder().encode(process.env.TOKEN_SECRET!));
+    
     const response = NextResponse.json({ message: "Login successful" }, { status: 200 });
 
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, 
     });
+
 
     return response;
 

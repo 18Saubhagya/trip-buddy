@@ -1,9 +1,25 @@
 "use client";
 
 import { useFormStore } from '@/zustand/useFormStore';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function StepPreview() {
     const { formData, setStep } = useFormStore();
+    const router = useRouter();
+
+    const handleSubmit = async () => {
+        try {
+            const response = await axios.post('/api/trips/new-trip', formData);
+            toast.success(response.data.message);
+            router.push("/dashboard");
+        } catch (error: any) {
+            console.error("Error submitting trip:", error);
+            toast.error(error.response?.data?.error || "Trip submission failed.");
+        }
+    };
+
     return (
         <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
             <h1 className="text-black text-2xl font-bold mb-6 text-center">Review Your Trip</h1>
@@ -67,10 +83,7 @@ export default function StepPreview() {
                 </button>
                 <button
                 className="bg-blue-600 text-white px-4 py-2 rounded"
-                onClick={() => {
-                    // handle submission or redirect
-                    console.log("Final submission data:", formData);
-                }}
+                onClick={handleSubmit}
                 >
                 Submit
                 </button>

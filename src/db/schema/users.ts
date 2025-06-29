@@ -1,5 +1,6 @@
 import {pgTable, serial, varchar, boolean, timestamp} from 'drizzle-orm/pg-core';
-
+import {trips} from "@/db/schema/trips";
+import {relations} from 'drizzle-orm';
 
 export const users = pgTable('users', {
     id: serial('id').primaryKey(),
@@ -14,4 +15,9 @@ export const users = pgTable('users', {
     resetPasswordToken: varchar('reset_password_token', { length: 100 }),
     resetPasswordTokenExpiry: timestamp('reset_password_token_expiry'),
     isVerified: boolean('is_verified').default(false),
-})
+});
+
+export const usersRelations = relations(users, ({many}) => ({
+    trips: many(trips),
+}));
+
