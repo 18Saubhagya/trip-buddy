@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1750266908140,
-      "tag": "0000_wise_franklin_richards",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1750273274920,
-      "tag": "0001_overrated_red_ghost",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1751219872994,
-      "tag": "0002_careful_black_tom",
+      "when": 1759050936602,
+      "tag": "0000_kind_johnny_blaze",
       "breakpoints": true
     }
   ]

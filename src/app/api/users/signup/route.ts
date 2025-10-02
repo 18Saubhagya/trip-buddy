@@ -13,6 +13,10 @@ export async function POST(request: Request) {
             return NextResponse.json({error: "All fields are required"}, {status: 400});
         }
 
+        if (username.length > 50) {
+            return NextResponse.json({ error: "Username too long" }, { status: 400 });
+        }
+
         const existingUser = await db.select().from(users).where(eq(users.email, email));
         if(existingUser.length > 0) {
             return NextResponse.json({error: "User already exists"}, {status: 409});

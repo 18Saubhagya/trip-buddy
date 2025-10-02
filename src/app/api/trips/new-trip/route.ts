@@ -14,14 +14,13 @@ export async function POST(req: Request) {
             return NextResponse.json({error: "Unauthorized"}, {status: 401});
         }
 
-        const {cities, startDate, endDate, maxBudget, minBudget, interests} = body;
-        if (!cities || !startDate || !endDate || !maxBudget || !minBudget || !interests) {
+        const {country, state, cities, startDate, endDate, maxBudget, minBudget, interests} = body;
+        if (!country || !state || !cities || !startDate || !endDate || !maxBudget || !minBudget || !interests) {
             return NextResponse.json({error: "All fields are required"}, {status: 400});
         }
 
         const [newItinerary] = await db.insert(itineraries).values({
-            cities: cities.join(", "),
-            days: Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)),
+            cities: cities,
             maxBudget: maxBudget,
             minBudget: minBudget,
             interests: interests.join(", "),
@@ -38,6 +37,8 @@ export async function POST(req: Request) {
         const newTrip: NewTrip = {
             userId: user.id,
             itineraryId: newItinerary.id,
+            country: country,
+            state: state,
             tripName: `Trip to ${cities.join(", ")}`,
             startDate: new Date(startDate).toISOString().split("T")[0],
             endDate: new Date(endDate).toISOString().split("T")[0],
