@@ -11,8 +11,11 @@ export const itineraries = pgTable("itineraries", {
     maxBudget: integer("max_budget").notNull(),
     minBudget: integer("min_budget").notNull(),
     currency: varchar("currency", { length: 10 }).notNull().default("Rupees"),
-    generatedPlan: jsonb("generated_plan").notNull(),
+    generatedPlan: jsonb("generated_plan"),
     generateStatus: tripStatusEnum("generate_status").notNull().default("pending"), // pending, completed, failed
+    generationAttempts: integer("generation_attempts").notNull().default(0),
+    generationCompletedAt: timestamp("generation_completed_at"),
+    generationMeta: jsonb("generation_meta"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
 }, (table) => {
