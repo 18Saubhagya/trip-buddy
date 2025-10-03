@@ -4,6 +4,7 @@ import {itineraries} from "@/db/schema/itineraries";
 import {NextResponse} from "next/server";
 import {getCurrentUserFromToken} from "@/lib/auth";
 import { type InferInsertModel } from "drizzle-orm";
+import {generateItinerary} from "@/lib/llm";
 
 export async function POST(req: Request) {
     try {
@@ -19,12 +20,14 @@ export async function POST(req: Request) {
             return NextResponse.json({error: "All fields are required"}, {status: 400});
         }
 
+        const generatePlan = await generateItinerary({cities, startDate, endDate, minBudget, maxBudget, interests, currency: "Rupees"});
+
         const [newItinerary] = await db.insert(itineraries).values({
             cities: cities,
             maxBudget: maxBudget,
             minBudget: minBudget,
             interests: interests.join(", "),
-            generatedPlan: {},
+            generatedPlan: generatePlan,
         })
         .returning({id: itineraries.id});
 
@@ -44,9 +47,9 @@ export async function POST(req: Request) {
             endDate: new Date(endDate).toISOString().split("T")[0],
         };
 
-        await db.insert(trips).values(newTrip);
+        const [newTripRecord] = await db.insert(trips).values(newTrip).returning({id: trips.id});
 
-        return NextResponse.json({ message: "Trip created successfully" }, { status: 201 });
+        return NextResponse.json({ message: "Trip created successfully", tripId: newTripRecord.id }, { status: 201 });
 
     }
     catch(error) {

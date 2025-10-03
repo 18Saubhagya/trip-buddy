@@ -24,7 +24,7 @@ export default function StepPreview() {
     try {
       const response = await axios.post("/api/trips/new-trip", formData);
       toast.success(response.data.message);
-      router.push("/dashboard");
+      router.push("/trip/" + response.data.tripId);
     } catch (error: any) {
       console.error("Error submitting trip:", error);
       toast.error(error.response?.data?.error || "Trip submission failed.");
