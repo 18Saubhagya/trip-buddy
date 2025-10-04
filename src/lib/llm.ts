@@ -1,4 +1,6 @@
 import { OpenAI } from "openai"
+import "dotenv/config";
+
 
 const client = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",
@@ -18,6 +20,8 @@ export async function generateItinerary({cities, startDate, endDate, minBudget, 
     interests: string[];
     currency: string;
 }) {
+
+    const generationKey = `${cities.join(",")}-${startDate}-${endDate}-${minBudget}-${maxBudget}-${interests.join(",")}`;
 
     const systemPrompt = `You are a professional travel planner. Your task is to generate detailed day-wise travel itineraries based on user preferences. 
     Always respond only in valid JSON that follows the exact structure provided. Do not include explanations, text, or formatting outside the JSON.`;
@@ -80,6 +84,6 @@ export async function generateItinerary({cities, startDate, endDate, minBudget, 
     console.log("meta:", completion.usage);
     
     
-    return completion.choices[0].message.content ?? {};
+    return {generatedPlan :completion.choices[0].message.content ?? {}, generationKey: generationKey, generationMeta: completion.usage};
 
 }

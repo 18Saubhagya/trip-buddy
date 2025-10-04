@@ -35,6 +35,7 @@ export async function GET(req: Request, {params} : {params: Params}) {
                     cities: itineraries.cities,
                     interests: itineraries.interests,
                     generatedPlan: itineraries.generatedPlan,
+                    generateStatus: itineraries.generateStatus,
                 },
             }
         )

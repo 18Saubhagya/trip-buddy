@@ -31,19 +31,31 @@ export default function TripPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+
         if (!params?.tripId) return;
         const fetchTrip = async () => {
             try {
                 const { data } = await axios.get(`/api/trips/${params.tripId}`);
                 setTrip(data.trip);
+
+                const itineraryStatus = data.trip?.itinerary?.generateStatus || "unknown";
+                console.log("Itinerary generation status:", itineraryStatus);
                 console.log("Fetched trip:", data.trip);
+                if (itineraryStatus === "completed" || itineraryStatus === "failed") {
+                    clearInterval(intervalId);
+                }
             } catch (error) {
                 console.error("Error fetching trip:", error);
+                clearInterval(intervalId);
             } finally {
                 setLoading(false);
             }
         };
         fetchTrip();
+
+        intervalId = setInterval(fetchTrip, 10000);
+        return () => clearInterval(intervalId);
     }, [params?.tripId]);
 
     if (loading) {

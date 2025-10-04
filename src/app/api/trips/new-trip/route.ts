@@ -4,7 +4,8 @@ import {itineraries} from "@/db/schema/itineraries";
 import {NextResponse} from "next/server";
 import {getCurrentUserFromToken} from "@/lib/auth";
 import { type InferInsertModel } from "drizzle-orm";
-import {generateItinerary} from "@/lib/llm";
+import {itinerary_generations} from "@/db/schema/itinerary_generations";
+import { itineraryQueue } from "@/lib/queues/itineraryQueue";
 
 export async function POST(req: Request) {
     try {
@@ -20,34 +21,56 @@ export async function POST(req: Request) {
             return NextResponse.json({error: "All fields are required"}, {status: 400});
         }
 
-        const generatePlan = await generateItinerary({cities, startDate, endDate, minBudget, maxBudget, interests, currency: "Rupees"});
+        //const generatePlan = await generateItinerary({cities, startDate, endDate, minBudget, maxBudget, interests, currency: "Rupees"});
+        //const result = await db.transaction(async (tx) => {
+            const [newItinerary] = await db.insert(itineraries).values({
+                cities: cities,
+                maxBudget: maxBudget,
+                minBudget: minBudget,
+                interests: interests.join(", "),
+                generatedPlan: {},
+            })
+            .returning({id: itineraries.id});
 
-        const [newItinerary] = await db.insert(itineraries).values({
-            cities: cities,
-            maxBudget: maxBudget,
-            minBudget: minBudget,
-            interests: interests.join(", "),
-            generatedPlan: generatePlan,
-        })
-        .returning({id: itineraries.id});
+            const [newItineraryGeneration] = await db.insert(itinerary_generations).values({
+                itineraryId: newItinerary.id,
+                status: "pending",
+                createdAt: new Date(),
+                generationKey: "",
+                attemptNumber: 0,
+            }).returning({id: itinerary_generations.id});
 
-        if (!newItinerary) {
-            return NextResponse.json({error: "Failed to create itinerary"}, {status: 500});
-        }
+            type NewTrip = InferInsertModel<typeof trips>;
 
-        type NewTrip = InferInsertModel<typeof trips>;
+            const newTrip: NewTrip = {
+                userId: user.id,
+                itineraryId: newItinerary.id,
+                country: country,
+                state: state,
+                tripName: `Trip to ${cities.join(", ")}`,
+                startDate: new Date(startDate).toISOString().split("T")[0],
+                endDate: new Date(endDate).toISOString().split("T")[0],
+            };
 
-        const newTrip: NewTrip = {
-            userId: user.id,
+            const [newTripRecord] = await db.insert(trips).values(newTrip).returning({id: trips.id});
+
+            /*return {
+                itineraryId: newItinerary.id,
+                itineraryGenerationId: newItineraryGeneration.id,
+                tripId: newTripRecord.id,
+            };
+        });*/
+
+        await itineraryQueue.add("generate-itinerary", {
+            cities,
+            startDate,
+            endDate,
+            minBudget,
+            maxBudget,
+            interests,
             itineraryId: newItinerary.id,
-            country: country,
-            state: state,
-            tripName: `Trip to ${cities.join(", ")}`,
-            startDate: new Date(startDate).toISOString().split("T")[0],
-            endDate: new Date(endDate).toISOString().split("T")[0],
-        };
-
-        const [newTripRecord] = await db.insert(trips).values(newTrip).returning({id: trips.id});
+            itineraryGenerationId: newItineraryGeneration.id
+        }, { jobId: `itinerary-${newItinerary.id}` });
 
         return NextResponse.json({ message: "Trip created successfully", tripId: newTripRecord.id }, { status: 201 });
 
