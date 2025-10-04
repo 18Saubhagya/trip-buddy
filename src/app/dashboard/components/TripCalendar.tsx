@@ -123,7 +123,7 @@ export default function TripCalendar() {
             
             <div>
             <h4 className="text-sm font-medium text-gray-300 mb-2">
-                Upcoming Trips
+                Upcoming {trips.length} Trip(s)
             </h4>
             <div className="flex flex-wrap gap-2">
                 {trips.map((trip) => (

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -18,9 +18,11 @@ type TripDetail = {
     country: string | null;
     state: string | null;
     itinerary: {
+        id: number;
         cities: string[];
         interests: string;
         generatedPlan: any;
+        generateStatus: string;
     };
 };
 
@@ -57,6 +59,23 @@ export default function TripPage() {
         intervalId = setInterval(fetchTrip, 10000);
         return () => clearInterval(intervalId);
     }, [params?.tripId]);
+
+    const [isRegenerating, setIsRegenerating] = useState(false);
+
+    const handleRegenerate = async () => {
+        if (!trip?.itinerary || isRegenerating) return;
+        setIsRegenerating(true);
+        try {
+            const res = await axios.post(`/api/trips/${trip.id}/regenerate`, {
+                itineraryId: trip.itinerary.id,
+            });
+            console.log("Regeneration triggered:", res.data);
+        } catch (error) {
+            console.error("Failed to regenerate:", error);
+        } finally {
+            setIsRegenerating(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -343,6 +362,33 @@ export default function TripPage() {
                                     </div>
                                 )}
                             </CardContent>
+                            <CardFooter className="flex justify-end space-x-2 pt-6 border-t border-slate-700/50">
+                                {(trip.itinerary.generateStatus === "completed" || trip.itinerary.generateStatus === "failed") && (
+                                    <div className="flex justify-center mt-6">
+                                        <Button
+                                        onClick={handleRegenerate}
+                                        disabled={isRegenerating}
+                                        className={`relative overflow-hidden px-6 py-2 text-white font-medium rounded-xl transition-all
+                                            ${isRegenerating
+                                            ? "bg-slate-700 cursor-not-allowed"
+                                            : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/25"
+                                            }`}
+                                        >
+                                        {isRegenerating ? (
+                                            <span className="flex items-center gap-2">
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                            Regenerating...
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-2">
+                                            <Sparkles className="h-4 w-4 text-white" />
+                                            Re-Generate Itinerary
+                                            </span>
+                                        )}
+                                        </Button>
+                                    </div>
+                                )}
+                            </CardFooter>
                         </Card>
                     </div>
                 </div>

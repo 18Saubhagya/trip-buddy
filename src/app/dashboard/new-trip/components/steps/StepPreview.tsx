@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormStore } from "@/zustand/useFormStore";
+import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -18,9 +19,12 @@ import {
 
 export default function StepPreview() {
   const { formData, setStep } = useFormStore();
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async () => {
+    if (loading) return;
+    setLoading(true);
     try {
       const response = await axios.post("/api/trips/new-trip", formData);
       toast.success(response.data.message);
@@ -28,6 +32,8 @@ export default function StepPreview() {
     } catch (error: any) {
       console.error("Error submitting trip:", error);
       toast.error(error.response?.data?.error || "Trip submission failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -134,10 +140,11 @@ export default function StepPreview() {
           <ArrowLeft size={16} /> Back
         </Button>
         <Button
+            disabled={loading}
           onClick={handleSubmit}
           className="flex items-center gap-2 px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-blue-500/30"
         >
-          Generate Itinerary <CheckCircle2 size={18} />
+          {loading ? "Generating..." : "Generate Itinerary"} <CheckCircle2 size={18} />
         </Button>
       </div>
     </div>

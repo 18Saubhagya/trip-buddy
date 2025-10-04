@@ -6,6 +6,7 @@ import {getCurrentUserFromToken} from "@/lib/auth";
 import { type InferInsertModel } from "drizzle-orm";
 import {itinerary_generations} from "@/db/schema/itinerary_generations";
 import { itineraryQueue } from "@/lib/queues/itineraryQueue";
+import { eq, and, sql } from "drizzle-orm";
 
 export async function POST(req: Request) {
     try {
@@ -19,6 +20,24 @@ export async function POST(req: Request) {
         const {country, state, cities, startDate, endDate, maxBudget, minBudget, interests} = body;
         if (!country || !state || !cities || !startDate || !endDate || !maxBudget || !minBudget || !interests) {
             return NextResponse.json({error: "All fields are required"}, {status: 400});
+        }
+
+        const existingItinerary = await db
+        .select({ id: itineraries.id, generateStatus: itineraries.generateStatus })
+        .from(itineraries)
+        .where(
+            and(
+                sql`ARRAY[${cities.join(",")}]::text[] = ${itineraries.cities}`,
+                eq(itineraries.minBudget, minBudget),
+                eq(itineraries.maxBudget, maxBudget),
+                eq(itineraries.interests, interests.join(", ")),
+                eq(itineraries.generateStatus, "pending")
+            )
+        )
+        .limit(1);
+
+        if (existingItinerary.length > 0) {
+            return NextResponse.json({message: "A similar itinerary generation is already in progress."}, { status: 409 });
         }
 
         //const generatePlan = await generateItinerary({cities, startDate, endDate, minBudget, maxBudget, interests, currency: "Rupees"});
@@ -69,7 +88,8 @@ export async function POST(req: Request) {
             maxBudget,
             interests,
             itineraryId: newItinerary.id,
-            itineraryGenerationId: newItineraryGeneration.id
+            itineraryGenerationId: newItineraryGeneration.id,
+            tripId: newTripRecord.id
         }, { jobId: `itinerary-${newItinerary.id}` });
 
         return NextResponse.json({ message: "Trip created successfully", tripId: newTripRecord.id }, { status: 201 });

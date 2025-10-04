@@ -28,6 +28,7 @@ export async function GET(req: Request) {
                 gt(trips.endDate, new Date().toISOString().split("T")[0])
             ))
             .orderBy(trips.startDate)
+            .limit(5);
 
         const tableData = await query;
 
