@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { MapPin, Clock, Calendar, ArrowLeft, Users, Compass, Sparkles } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 type TripDetail = {
     id: number;
@@ -31,6 +32,7 @@ export default function TripPage() {
     const router = useRouter();
     const [trip, setTrip] = useState<TripDetail | null>(null);
     const [loading, setLoading] = useState(true);
+    let toggle = false;
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
@@ -58,7 +60,7 @@ export default function TripPage() {
 
         intervalId = setInterval(fetchTrip, 10000);
         return () => clearInterval(intervalId);
-    }, [params?.tripId]);
+    }, [params?.tripId, toggle]);
 
     const [isRegenerating, setIsRegenerating] = useState(false);
 
@@ -69,6 +71,8 @@ export default function TripPage() {
             const res = await axios.post(`/api/trips/${trip.id}/regenerate`, {
                 itineraryId: trip.itinerary.id,
             });
+            toast.success(res.data.message);
+            toggle = !toggle;
             console.log("Regeneration triggered:", res.data);
         } catch (error) {
             console.error("Failed to regenerate:", error);
