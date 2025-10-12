@@ -93,11 +93,11 @@ export async function POST(req: Request, {params} : {params: Params}) {
             endDate: trip.endDate,
             minBudget: oldItinerary.minBudget,
             maxBudget: oldItinerary.maxBudget,
-            interests: oldItinerary.interests,
+            interests: oldItinerary.interests.split(",").map((interest) => interest.trim()),
             itineraryId: oldItinerary.id,
             itineraryGenerationId: generationRecordId,
             tripId: tid
-        }, { jobId: `itinerary-${oldItinerary.id}` });
+        }, { jobId: `itinerary-${generationRecordId}` });
 
         return NextResponse.json({ message: "Trip created successfully", tripId: tid }, { status: 201 });
         

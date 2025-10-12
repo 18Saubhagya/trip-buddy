@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import ItineraryRatingSection from "@/components/ItineraryRatingSection";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import { MapPin, Clock, Calendar, ArrowLeft, Users, Compass, Sparkles } from "lu
 import { toast } from "react-hot-toast";
 
 type TripDetail = {
-    id: number;
+    tripId: number;
     tripName: string;
     startDate: string;
     endDate: string;
@@ -68,7 +69,9 @@ export default function TripPage() {
         if (!trip?.itinerary || isRegenerating) return;
         setIsRegenerating(true);
         try {
-            const res = await axios.post(`/api/trips/${trip.id}/regenerate`, {
+            console.log(trip.tripId);
+            
+            const res = await axios.post('/api/trips/'+trip?.tripId+'/regenerate', {
                 itineraryId: trip.itinerary.id,
             });
             toast.success(res.data.message);
@@ -366,16 +369,29 @@ export default function TripPage() {
                                     </div>
                                 )}
                             </CardContent>
-                            <CardFooter className="flex justify-end space-x-2 pt-6 border-t border-slate-700/50">
-                                {(trip.itinerary.generateStatus === "completed" || trip.itinerary.generateStatus === "failed") && (
-                                    <div className="flex justify-center mt-6">
+                            <CardFooter className="flex flex-col items-center justify-center space-y-6 pt-8 border-t border-slate-700/50 bg-slate-900/40 backdrop-blur-sm rounded-b-2xl">
+                                {trip.itinerary.generateStatus === "completed" && (
+                                    <div className="w-full max-w-2xl text-center">
+                                    <div className="flex justify-center">
+                                        <ItineraryRatingSection
+                                        itineraryId={trip.itinerary.id}
+                                        interests={trip.itinerary.interests.split(",").map(i => i.trim())}
+                                        />
+                                    </div>
+                                    </div>
+                                )}
+
+                                {(trip.itinerary.generateStatus === "completed" ||trip.itinerary.generateStatus === "failed") && (
+                                    <div className="w-full max-w-2xl text-center">
+                                    <div className="mt-8">
                                         <Button
                                         onClick={handleRegenerate}
                                         disabled={isRegenerating}
-                                        className={`relative overflow-hidden px-6 py-2 text-white font-medium rounded-xl transition-all
-                                            ${isRegenerating
-                                            ? "bg-slate-700 cursor-not-allowed"
-                                            : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/25"
+                                        className={`relative overflow-hidden px-8 py-3 text-white font-medium rounded-xl transition-all
+                                            ${
+                                            isRegenerating
+                                                ? "bg-slate-700 cursor-not-allowed"
+                                                : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/25"
                                             }`}
                                         >
                                         {isRegenerating ? (
@@ -391,8 +407,13 @@ export default function TripPage() {
                                         )}
                                         </Button>
                                     </div>
+                                    <p className="text-xs text-slate-500 mt-3 italic">
+                                        Need a fresh plan? Click re-generate to create a new version based on your feedback.
+                                    </p>
+                                    </div>
                                 )}
                             </CardFooter>
+
                         </Card>
                     </div>
                 </div>

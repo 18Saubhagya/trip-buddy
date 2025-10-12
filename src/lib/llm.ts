@@ -11,6 +11,25 @@ const client = new OpenAI({
     },
 });
 
+function extractJson(message: any) {
+    console.log('message: '+message);
+    const raw = message.reasoning || message.content || "";
+    console.log('raw: '+raw);
+    const match = raw.match(/```json([\s\S]*?)```/);
+    console.log('match: '+match);
+    
+    if(match) {
+        console.log('match[1]: '+JSON.parse(match[1]));
+        return JSON.parse(match[1]);
+    }
+    try{ 
+        console.log('JSON.parse(raw): '+JSON.parse(raw));
+        return JSON.parse(raw); 
+    } catch{ 
+        return {}; 
+    }
+}
+
 export async function generateItinerary({cities, startDate, endDate, minBudget, maxBudget, interests, currency} : {
     cities: string[];
     startDate: string;
@@ -75,15 +94,15 @@ export async function generateItinerary({cities, startDate, endDate, minBudget, 
                 content: userPrompt 
             },
         ],
-        temperature: 0.2,
+        temperature: 0.4,
         response_format: { type: "json_object" }
     })
 
     console.log("Completion:", completion.choices[0].message);
-    console.log("JSON Content:", completion.choices[0].message?.content);
+    console.log("JSON Content:", extractJson(completion.choices[0].message));
     console.log("meta:", completion.usage);
     
     
-    return {generatedPlan :completion.choices[0].message.content ?? {}, generationKey: generationKey, generationMeta: completion.usage};
+    return {generatedPlan :extractJson(completion.choices[0].message) ?? {}, generationKey: generationKey, generationMeta: completion.usage};
 
 }
