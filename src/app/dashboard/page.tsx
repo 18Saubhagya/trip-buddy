@@ -13,7 +13,7 @@ import axios from "axios";
 export default function DashboardPage() {
     const router = useRouter();
 
-    const [user, setUser] = useState<{id: String; username: string; email: string} | null>(null);
+    const [user, setUser] = useState<{id: string; username: string; email: string} | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {

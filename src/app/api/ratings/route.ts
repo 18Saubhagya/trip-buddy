@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { ratings } from "@/db/schema/ratings";
-import { itineraries } from "@/db/schema/itineraries";
-import { itinerary_generations } from "@/db/schema/itinerary_generations";
+import { ratings } from "@/db/index";
+import { itineraries } from "@/db/index";
+import { itinerary_generations } from "@/db/index";
 import { trips } from "@/db/schema/trips";
 import { eq, and, desc } from "drizzle-orm";
 import { getCurrentUserFromToken } from "@/lib/auth";

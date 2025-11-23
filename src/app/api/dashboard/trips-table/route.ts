@@ -42,7 +42,7 @@ export async function GET(req: Request) {
             .from(trips)
             .where(and(...conditions));
 
-        let query = db.select({
+        const query = db.select({
                 id: trips.id,
                 tripName: trips.tripName,
                 startDate: trips.startDate,

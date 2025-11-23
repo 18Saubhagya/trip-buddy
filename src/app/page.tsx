@@ -29,13 +29,6 @@ export default function TripBuddyLanding() {
     }
   ];
 
-  const stats = [
-    { value: "10K+", label: "Active Travelers" },
-    { value: "50K+", label: "Trips Planned" },
-    { value: "150+", label: "Countries" },
-    { value: "4.8", label: "User Rating" }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 text-white">
       {/* Navigation */}
@@ -226,7 +219,7 @@ export default function TripBuddyLanding() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Get in Touch</h2>
-            <p className="text-xl text-slate-400">Have questions? We'd love to hear from you</p>
+            <p className="text-xl text-slate-400">Have questions? We would love to hear from you</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">

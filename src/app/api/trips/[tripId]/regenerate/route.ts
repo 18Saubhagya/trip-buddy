@@ -6,14 +6,12 @@ import { itinerary_generations } from "@/db/schema/itinerary_generations";
 import { itineraryQueue } from "@/lib/queues/itineraryQueue";
 import { eq, and, sql, or } from "drizzle-orm";
 import { getCurrentUserFromToken } from "@/lib/auth";
-import { type InferInsertModel } from "drizzle-orm";
-import { start } from "repl";
 
 interface Params {
     tripId: string;
 }
 
-export async function POST(req: Request, {params} : {params: Params}) {
+export async function POST(req: Request, {params} : {params: Promise<Params>}) {
     try {
         const {tripId} = await params;
         //const tripId = Number(params.tripId);

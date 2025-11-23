@@ -3,7 +3,7 @@ import { jwtVerify } from "jose";
 
 const TOKEN_SECRET = new TextEncoder().encode(process.env.TOKEN_SECRET!);
 
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getCurrentUserFromToken = async (req: Request) => {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;

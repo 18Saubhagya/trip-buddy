@@ -17,6 +17,7 @@ import {
   Heart,
 } from "lucide-react";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function StepPreview() {
   const { formData, setStep } = useFormStore();
   const [loading, setLoading] = useState(false);

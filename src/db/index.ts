@@ -6,6 +6,7 @@ import {users, usersRelations} from './schema/users';
 import {trips, tripsRelations} from './schema/trips';
 import {itineraries, itinerariesRelations} from './schema/itineraries';
 import { itinerary_generations, itineraryGenerationsRelations } from './schema/itinerary_generations';
+import { ratings, ratingsRelations } from './schema/ratings';
 
 
 dotenv.config({path: '.env.local'});
@@ -28,6 +29,7 @@ export const db = global._db ?? drizzle(sql, {
         trips,
         itineraries,
         itinerary_generations,
+        ratings,
     }
 });
 
@@ -39,7 +41,11 @@ export {
     usersRelations,
     tripsRelations,
     itinerariesRelations,
+    itineraryGenerationsRelations,
+    ratingsRelations,
     users,
     trips,
     itineraries,
+    itinerary_generations,
+    ratings,
 };

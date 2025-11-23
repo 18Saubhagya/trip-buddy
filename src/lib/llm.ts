@@ -11,6 +11,7 @@ const client = new OpenAI({
     },
 });
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function extractJson(message: any) {
     console.log('message: '+message);
     const raw = message.reasoning || message.content || "";

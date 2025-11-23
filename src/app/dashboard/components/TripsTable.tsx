@@ -26,6 +26,7 @@ const statusMap: Record<string, string> = {
     cancelled: "Cancelled",
 };
  
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function TripsTable() {
     const router = useRouter()
     const [searchTerm, setSearchTerm] = useState("");

@@ -18,6 +18,7 @@ const signupSchema = z.object({
     password: z.string().min(8, "Password must be at least 8 characters long").max(16, "Password must be at most 16 characters long"),
 });
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function SignupPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({

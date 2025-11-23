@@ -8,7 +8,7 @@ interface Params {
     tripId: string;
 }
 
-export async function GET(req: Request, {params} : {params: Params}) {
+export async function GET(req: Request, {params} : {params: Promise<Params>}) {
     try {
         const {tripId} = await params;
         //const tripId = Number(params.tripId);

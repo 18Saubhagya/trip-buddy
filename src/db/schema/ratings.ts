@@ -1,6 +1,6 @@
 import { pgTable, serial, integer, text, timestamp, index, jsonb } from "drizzle-orm/pg-core";
 import { itinerary_generations } from "./itinerary_generations";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import { users } from "./users";
 import { itineraries } from "./itineraries";
 

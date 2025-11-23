@@ -17,6 +17,7 @@ const loginSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters long").max(16, "Password must be at most 16 characters"),
 });
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function LoginPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -26,6 +27,7 @@ export default function LoginPage() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -157,7 +159,7 @@ export default function LoginPage() {
 
                 <div className="mt-6 text-center">
                 <p className="text-slate-400">
-                    Don't have an account?{" "}
+                    Don&apos;t have an account?{" "}
                     <Link 
                     href="/signup" 
                     className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"

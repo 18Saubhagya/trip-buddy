@@ -23,7 +23,6 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import {toast} from "react-hot-toast";
 

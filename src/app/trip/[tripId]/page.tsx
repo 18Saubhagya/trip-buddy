@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { MapPin, Clock, Calendar, ArrowLeft, Users, Compass, Sparkles } from "lucide-react";
 import { toast } from "react-hot-toast";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type TripDetail = {
     tripId: number;
     tripName: string;
@@ -28,6 +29,7 @@ type TripDetail = {
     };
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function TripPage() {
     const params = useParams();
     const router = useRouter();
@@ -36,6 +38,7 @@ export default function TripPage() {
     let toggle = false;
 
     useEffect(() => {
+        // eslint-disable-next-line prefer-const
         let intervalId: NodeJS.Timeout;
 
         if (!params?.tripId) return;
@@ -104,7 +107,7 @@ export default function TripPage() {
                     </div>
                     <div className="space-y-2">
                         <h2 className="text-2xl font-bold text-white">Trip Not Found</h2>
-                        <p className="text-slate-400">We couldn't find the trip you're looking for.</p>
+                        <p className="text-slate-400">We could not find the trip you are looking for.</p>
                     </div>
                     <Button
                         onClick={() => router.push("/dashboard")}
