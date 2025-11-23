@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db/schema";
-import { trips } from "@/db/schema";
+import { db } from "@/db/index";
+import { trips } from "@/db/index";
 import { getCurrentUserFromToken } from "@/lib/auth";
 import { eq, and , sql, desc, ilike, or, type SQL } from "drizzle-orm";
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db/schema";
-import { trips, itineraries } from "@/db/schema";
+import { db } from "@/db/index";
+import { trips, itineraries } from "@/db/index";
 import { getCurrentUserFromToken } from "@/lib/auth";
 import { eq, and , gt, sql, asc, desc } from "drizzle-orm";
 

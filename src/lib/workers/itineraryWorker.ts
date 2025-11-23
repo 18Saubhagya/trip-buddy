@@ -1,7 +1,7 @@
 import { Worker, Job } from "bullmq";
 import redis from "../redis";
 import { generateItinerary } from "../llm";
-import { db } from "@/db/schema";
+import { db } from "@/db/worker-db";
 import { itinerary_generations } from "@/db/schema/itinerary_generations";
 import { itineraries } from "@/db/schema/itineraries";
 import { trips } from "@/db/schema/trips";

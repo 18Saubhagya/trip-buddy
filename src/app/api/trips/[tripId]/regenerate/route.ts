@@ -1,10 +1,10 @@
-import { db } from "@/db/schema";
-import { trips } from "@/db/schema";
+import { db } from "@/db/index";
+import { trips } from "@/db/index";
 import { itineraries } from "@/db/schema/itineraries";
 import { NextResponse } from "next/server";
 import { itinerary_generations } from "@/db/schema/itinerary_generations";
 import { itineraryQueue } from "@/lib/queues/itineraryQueue";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, or } from "drizzle-orm";
 import { getCurrentUserFromToken } from "@/lib/auth";
 import { type InferInsertModel } from "drizzle-orm";
 import { start } from "repl";
@@ -68,8 +68,11 @@ export async function POST(req: Request, {params} : {params: Params}) {
             const [existingGenerations] = await db
                 .select({id: itinerary_generations.id})
                 .from(itinerary_generations)
-                .where(and(eq(itinerary_generations.itineraryId, oldItinerary.id), eq(itinerary_generations.status, "failed")))
+                .where(and(eq(itinerary_generations.itineraryId, oldItinerary.id), or(eq(itinerary_generations.status, "pending"), eq(itinerary_generations.status, "failed"))))
                 .limit(1);
+
+            console.log(existingGenerations);
+            
             
             await db.update(itinerary_generations)
                 .set({ status: "pending", 
@@ -86,6 +89,18 @@ export async function POST(req: Request, {params} : {params: Params}) {
         } else {
             return NextResponse.json({error: "Itinerary generation is still in progress. Please wait."}, {status: 409});
         }
+
+        const jobId = `itinerary-${generationRecordId}`;
+        const existingJob = await itineraryQueue.getJob(jobId);
+
+        if (existingJob) {
+            const state = await existingJob.getState();
+            if (["waiting", "active", "delayed", "paused"].includes(state)) {
+                return NextResponse.json({ error: "A generation job is already running for this itinerary." }, { status: 409 });
+            }
+
+            await existingJob.remove();
+        }
         
         await itineraryQueue.add("generate-itinerary", {
             cities: oldItinerary.cities,
@@ -97,7 +112,7 @@ export async function POST(req: Request, {params} : {params: Params}) {
             itineraryId: oldItinerary.id,
             itineraryGenerationId: generationRecordId,
             tripId: tid
-        }, { jobId: `itinerary-${generationRecordId}` });
+        }, { jobId: jobId });
 
         return NextResponse.json({ message: "Trip created successfully", tripId: tid }, { status: 201 });
         

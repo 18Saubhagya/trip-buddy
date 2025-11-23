@@ -1,4 +1,4 @@
-import {db} from "@/db/schema";
+import {db} from "@/db/index";
 import {users} from "@/db/schema/users";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";

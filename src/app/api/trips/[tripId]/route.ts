@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db/schema";
-import { trips, itineraries } from "@/db/schema";
+import { db } from "@/db/index";
+import { trips, itineraries } from "@/db/index";
 import { getCurrentUserFromToken } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 
@@ -32,6 +32,7 @@ export async function GET(req: Request, {params} : {params: Params}) {
                 country: trips.country,
                 state: trips.state,
                 itinerary: {
+                    id: itineraries.id,
                     cities: itineraries.cities,
                     interests: itineraries.interests,
                     generatedPlan: itineraries.generatedPlan,

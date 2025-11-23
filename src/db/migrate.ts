@@ -1,4 +1,4 @@
-import {db} from './schema/index';
+import {db} from './index';
 import {migrate} from 'drizzle-orm/neon-http/migrator';
 import * as dotenv from 'dotenv';
 

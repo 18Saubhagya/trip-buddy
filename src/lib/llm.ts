@@ -98,6 +98,7 @@ export async function generateItinerary({cities, startDate, endDate, minBudget, 
         response_format: { type: "json_object" }
     })
 
+    console.log("Completion:", completion);
     console.log("Completion:", completion.choices[0].message);
     console.log("JSON Content:", extractJson(completion.choices[0].message));
     console.log("meta:", completion.usage);

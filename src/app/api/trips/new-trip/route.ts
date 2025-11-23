@@ -1,4 +1,4 @@
-import {db} from "@/db/schema";
+import {db} from "@/db/index";
 import {trips} from "@/db/schema/trips";
 import {itineraries} from "@/db/schema/itineraries";
 import {NextResponse} from "next/server";

@@ -19,21 +19,31 @@ export default function ItineraryRatingSection({ itineraryId, interests }: Ratin
     const [interestRatings, setInterestRatings] = useState<Record<string, number>>({});
     const [comment, setComment] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
     const handleSubmit = async () => {
+        if (overallRating < 1 || overallRating > 5) {
+            toast.error("Please select an overall rating between 1 and 5.");
+            return;
+        }
+
+        setIsSubmitting(true);
         try {
-            setIsSubmitting(true);
-            console.log("in rating");
+            await axios.post("/api/ratings", {
+                itineraryId,
+                overall: overallRating,
+                interestScores: interestRatings,
+                comments: comment.trim() || null,
+            });
+
+            toast.success("Thanks for your feedback!");
+            setHasSubmitted(true);
         } catch (error) {
-            toast.error("Failed to submit rating");
-            console.error(error);
+            console.error("Rating submit error:", error);
+            toast.error("Failed to submit rating. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
-  };
-
-    const handleOverallRatingChange = (rating: number) => {
-        setOverallRating(rating);
     };
 
     const handleInterestRatingChange = (interest: string, rating: number) => {
@@ -44,10 +54,6 @@ export default function ItineraryRatingSection({ itineraryId, interests }: Ratin
             };
         })
     }
-
-    const handleCommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setComment(event.target.value);
-    };
 
     const getStarColor = (value: number) => {
         if (value <= 2) 
@@ -67,10 +73,11 @@ export default function ItineraryRatingSection({ itineraryId, interests }: Ratin
                     {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                         key={star}
-                        onClick={() => setOverallRating(star)}
+                        onClick={() => { if (!hasSubmitted) setOverallRating(star) }}
                         className={clsx(
                         "w-8 h-8 cursor-pointer transition-all duration-200 hover:scale-110",
-                        star <= overallRating ? getStarColor(overallRating) : "text-slate-600 hover:text-slate-400"
+                        star <= overallRating ? getStarColor(overallRating) : "text-slate-600 hover:text-slate-400",
+                            hasSubmitted && "cursor-default opacity-70 hover:scale-100"
                         )}
                         fill={star <= overallRating ? "currentColor" : "none"}
                     />
@@ -102,12 +109,13 @@ export default function ItineraryRatingSection({ itineraryId, interests }: Ratin
                         {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                             key={star}
-                            onClick={() => handleInterestRatingChange(interest, star)}
+                            onClick={() => { if (!hasSubmitted) handleInterestRatingChange(interest, star) }}
                             className={clsx(
                                 "w-5 h-5 cursor-pointer transition-transform duration-200 hover:scale-110",
                                 star <= (interestRatings[interest] || 0)
                                 ? getStarColor(interestRatings[interest] || 0)
-                                : "text-slate-600 hover:text-slate-400"
+                                : "text-slate-600 hover:text-slate-400",
+                                    hasSubmitted && "cursor-default opacity-70 hover:scale-100"
                             )}
                             fill={star <= (interestRatings[interest] || 0) ? "currentColor" : "none"}
                             />
@@ -122,6 +130,7 @@ export default function ItineraryRatingSection({ itineraryId, interests }: Ratin
                 <h4 className="text-white text-sm font-semibold mb-2 text-center">Additional Feedback</h4>
                 <Textarea
                     value={comment}
+                    disabled={hasSubmitted}
                     onChange={(e) => setComment(e.target.value)}
                     placeholder="Tell us what you liked or what could be improved..."
                     className="bg-slate-800/60 border border-slate-700 text-slate-200 w-full min-h-[100px] resize-none focus-visible:ring-1 focus-visible:ring-blue-500/40"
@@ -133,13 +142,17 @@ export default function ItineraryRatingSection({ itineraryId, interests }: Ratin
                     disabled={isSubmitting || overallRating === 0}
                     onClick={handleSubmit}
                     className={clsx(
-                    "px-8 py-2 rounded-xl font-medium transition-all text-white",
-                    isSubmitting
-                        ? "bg-slate-700 cursor-not-allowed"
-                        : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/25"
-                    )}
+                        "px-8 py-2 rounded-xl font-medium transition-all text-white",
+                        isSubmitting || hasSubmitted
+                            ? "bg-slate-700 cursor-not-allowed"
+                            : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/25"
+                        )}
                 >
-                    {isSubmitting ? "Submitting..." : "Submit Feedback"}
+                    {hasSubmitted
+                        ? "Feedback Submitted"
+                        : isSubmitting
+                        ? "Submitting..."
+                        : "Submit Feedback"}
                 </Button>
                 </div>
             </CardContent>
