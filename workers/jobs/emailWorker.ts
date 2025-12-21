@@ -1,6 +1,6 @@
 import { Worker, Job} from "bullmq";
-import redis from "../redis";
-import { sendMail } from "../mailer";
+import redis from "../lib/redis";
+import { sendMail } from "../lib/mailer";
 import "dotenv/config";
 
 export const emailWorker = new Worker("email-notification-queue", 

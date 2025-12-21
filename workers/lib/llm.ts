@@ -11,7 +11,7 @@ const client = new OpenAI({
     },
 });
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable .typescript-eslint/no-explicit-any */
 function extractJson(message: any) {
     console.log('message: '+message);
     const raw = message.reasoning || message.content || "";
@@ -84,7 +84,7 @@ export async function generateItinerary({cities, startDate, endDate, minBudget, 
     `;
 
     const completion = await client.chat.completions.create({
-        model: "deepseek/deepseek-chat-v3.1:free",
+        model: "x-ai/grok-4.1-fast:free",
         messages: [
             {
                 role: "system",
