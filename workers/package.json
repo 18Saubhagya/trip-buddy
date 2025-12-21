@@ -8,7 +8,6 @@
     "dev": "ts-node src/index.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
     "bullmq": "^5.64.1",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",
