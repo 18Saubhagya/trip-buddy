@@ -1,6 +1,6 @@
 import { pgTable, serial, text, jsonb, timestamp, integer, pgEnum, index } from "drizzle-orm/pg-core";
-import { itineraries } from "./itineraries";
 import { relations } from "drizzle-orm";
+import { itineraries } from "./itineraries.js";
 
 export const generationStatusEnum = pgEnum("itinerary_generation_status_enum", ["pending","running","completed","failed"]);
 

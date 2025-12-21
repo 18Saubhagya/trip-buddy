@@ -1,6 +1,6 @@
 import {pgTable, serial, integer, text, timestamp, date, varchar, index, pgEnum} from "drizzle-orm/pg-core";
-import {users} from "./users";
-import { itineraries } from "./itineraries";
+import {users} from "./users.js";
+import { itineraries } from "./itineraries.js";
 import {relations} from "drizzle-orm";
 
 export const tripStatusEnum = pgEnum("trip_status_enum", ["new", "in_progress", "completed", "cancelled"]);
@@ -14,7 +14,7 @@ export const trips = pgTable("trips", {
     state: varchar("state", { length: 100 }),
     startDate: date("start_date").notNull(),
     endDate: date("end_date").notNull(),
-    status: tripStatusEnum("status").notNull().default("new"), // new, in-progress, completed, cancelled
+    status: tripStatusEnum("status").notNull().default("new"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
 }, (table) => {
@@ -35,4 +35,3 @@ export const tripsRelations = relations(trips, ({one}) => ({
         references: [itineraries.id],
     }),
 }));
-

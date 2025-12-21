@@ -1,18 +1,16 @@
 import { OpenAI } from "openai"
 import "dotenv/config";
 
-
 const client = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",
-    apiKey: process.env.OPENAI_API_KEY!,
+    apiKey: process.env.OPENAI_API_KEY,
     defaultHeaders: {
         'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
         'X-Title': 'Travel Buddy',
     },
 });
 
-/* eslint-disable .typescript-eslint/no-explicit-any */
-function extractJson(message: any) {
+function extractJson(message) {
     console.log('message: '+message);
     const raw = message.reasoning || message.content || "";
     console.log('raw: '+raw);
@@ -31,15 +29,7 @@ function extractJson(message: any) {
     }
 }
 
-export async function generateItinerary({cities, startDate, endDate, minBudget, maxBudget, interests, currency} : {
-    cities: string[];
-    startDate: string;
-    endDate: string;
-    minBudget: number;
-    maxBudget: number;
-    interests: string[];
-    currency: string;
-}) {
+export async function generateItinerary({cities, startDate, endDate, minBudget, maxBudget, interests, currency}) {
 
     const generationKey = `${cities.join(",")}-${startDate}-${endDate}-${minBudget}-${maxBudget}-${interests.join(",")}`;
 
@@ -104,7 +94,9 @@ export async function generateItinerary({cities, startDate, endDate, minBudget, 
     console.log("JSON Content:", extractJson(completion.choices[0].message));
     console.log("meta:", completion.usage);
     
-    
-    return {generatedPlan :extractJson(completion.choices[0].message) ?? {}, generationKey: generationKey, generationMeta: completion.usage};
-
+    return {
+        generatedPlan: extractJson(completion.choices[0].message) ?? {}, 
+        generationKey: generationKey, 
+        generationMeta: completion.usage
+    };
 }

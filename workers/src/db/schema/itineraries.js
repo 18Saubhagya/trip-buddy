@@ -1,6 +1,7 @@
 import {pgTable, serial, text, jsonb, timestamp, integer, varchar, index, pgEnum} from "drizzle-orm/pg-core"
-import {trips} from "./trips";
+
 import {relations} from "drizzle-orm";
+import { trips } from "./trips.js";
 
 export const tripStatusEnum = pgEnum("generate_status_enum", ["pending","completed","failed"]);
 
@@ -12,7 +13,7 @@ export const itineraries = pgTable("itineraries", {
     minBudget: integer("min_budget").notNull(),
     currency: varchar("currency", { length: 10 }).notNull().default("Rupees"),
     generatedPlan: jsonb("generated_plan"),
-    generateStatus: tripStatusEnum("generate_status").notNull().default("pending"), // pending, completed, failed
+    generateStatus: tripStatusEnum("generate_status").notNull().default("pending"),
     generationAttempts: integer("generation_attempts").notNull().default(0),
     generationCompletedAt: timestamp("generation_completed_at"),
     generationMeta: jsonb("generation_meta"),

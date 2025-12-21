@@ -1,5 +1,5 @@
 import {pgTable, serial, text, varchar, boolean, timestamp, index} from 'drizzle-orm/pg-core';
-import {trips} from "./trips";
+import {trips} from "./trips.js";
 import {relations} from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -26,4 +26,3 @@ export const users = pgTable('users', {
 export const usersRelations = relations(users, ({many}) => ({
     trips: many(trips),
 }));
-

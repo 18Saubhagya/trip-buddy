@@ -1,8 +1,8 @@
 import { pgTable, serial, integer, text, timestamp, index, jsonb } from "drizzle-orm/pg-core";
-import { itinerary_generations } from "./itinerary_generations";
+import { itinerary_generations } from "./itinerary_generations.js";
 import { relations } from "drizzle-orm";
-import { users } from "./users";
-import { itineraries } from "./itineraries";
+import { users } from "./users.js";
+import { itineraries } from "./itineraries.js";
 
 export const ratings = pgTable("ratings", {
     id: serial("id").primaryKey(),

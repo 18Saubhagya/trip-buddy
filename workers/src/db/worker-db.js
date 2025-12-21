@@ -2,15 +2,15 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as dotenv from "dotenv";
 
-import { users } from "./schema/users";
-import { trips } from "./schema/trips";
-import { itineraries } from "./schema/itineraries";
-import { itinerary_generations } from "./schema/itinerary_generations";
+import { itineraries } from "./schema/itineraries.js";
+import { itinerary_generations } from "./schema/itinerary_generations.js";
+import { users } from "./schema/users.js";
+import { trips } from "./schema/trips.js";
 
 dotenv.config({ path: ".env.local" });
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL!,
+    connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
     max: 10,
 });
